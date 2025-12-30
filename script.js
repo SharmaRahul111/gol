@@ -16,6 +16,7 @@ class Cell {
     let cornerCount = this.data[i - 1][j - 1].alive + this.data[i - 1][j + 1].alive + this.data[i + 1][j - 1] + this.data[i + 1][j + 1].alive
     return edgeCount + cornerCount
   }
+
 }
 
 class Grid {
@@ -33,14 +34,37 @@ class Grid {
       }
     }
   }
+
+  draw(c) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.cols; j++) {
+        let cell = this.data[i][j]
+
+        c.beginPath()
+        c.fillStyle = cell.alive ? "white" : "black"
+        c.fillRect(cell.x * this.size, cell.y * this.size, this.size, this.size)
+        c.lineWidth = 1
+        c.strokeStyle = "white"
+        c.strokeRect(cell.x * this.size, cell.y * this.size, this.size, this.size)
+      }
+    }
+
+  }
 }
 
-let grid = new Grid(20, 20, 20)
+let size = 25
+let cols = Math.floor(innerHeight / size)
+let rows = Math.floor(innerWidth / size)
+let grid = new Grid(rows, cols, size)
 
 function animate() {
   requestAnimationFrame(animate);
   c.fillStyle = "rgba(0,0,0,1)"
   c.fillRect(0, 0, innerWidth, innerHeight);
+  // console.log(5)
+  randomAlive()
+  grid.draw(c)
+
 
 }
 animate();
@@ -49,3 +73,14 @@ addEventListener('resize', () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 });
+
+// helper functions
+function alive(x, y) {
+  grid.data[x][y].alive = true
+}
+function randInt(x) {
+  return Math.floor(Math.random() * x)
+}
+function randomAlive() {
+  alive(randInt(grid.rows), randInt(grid.cols))
+}
