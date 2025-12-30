@@ -73,8 +73,11 @@ class Grid {
         // Any live cell with more than three live neighbours dies, as if by overpopulation.
         // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
         let cell = this.data[i][j]
-        if (cell.alive && (cell.count < 2 || cell.count > 3)) this.updateList.push(cell)
-        else if (cell.count == 3) this.updateList.push(cell)
+        if (cell.alive && (cell.count < 2 || cell.count > 3)) {
+          this.updateList.push(cell)
+          // console.log(cell.x, cell.y, cell.count)
+        }
+        else if (!cell.alive && (cell.count == 3)) this.updateList.push(cell)
       }
     }
 
@@ -96,13 +99,16 @@ class Grid {
         c.lineWidth = 1
         c.strokeStyle = "white"
         c.strokeRect(cell.x * this.size, cell.y * this.size, this.size, this.size)
+        // c.font = "9px Arial"
+        // c.fillStyle = "red"
+        // c.fillText(`${cell.x},${cell.y}`, cell.x * this.size, cell.y * this.size + this.size / 2)
       }
     }
 
   }
 }
 
-let size = 25
+let size = 30
 let cols = Math.floor(innerHeight / size)
 let rows = Math.floor(innerWidth / size)
 let grid = new Grid(rows, cols, size)
@@ -116,7 +122,8 @@ function animate() {
   grid.update()
 
 
-  if (ON) requestAnimationFrame(animate)
+  // if (ON) requestAnimationFrame(animate)
+  requestAnimationFrame(animate)
 }
 animate()
 
@@ -145,4 +152,92 @@ function randomAlive() {
 function update() {
   grid.updateCheck()
   grid.update()
+}
+
+// patterns
+function pattern(x, y, style) {
+  let patterns = {
+    // Oscillators
+    blinker: [
+      [x, y - 1],
+      [x, y],
+      [x, y + 1]
+    ],
+
+    toad: [
+      [x - 1, y],
+      [x, y],
+      [x + 1, y],
+      [x, y + 1],
+      [x + 1, y + 1],
+      [x + 2, y + 1]
+    ],
+
+    beacon: [
+      [x, y],
+      [x + 1, y],
+      [x, y + 1],
+      [x + 1, y + 1],
+      [x + 2, y + 2],
+      [x + 3, y + 2],
+      [x + 2, y + 3],
+      [x + 3, y + 3]
+    ],
+
+    // Still lifes
+    block: [
+      [x, y],
+      [x + 1, y],
+      [x, y + 1],
+      [x + 1, y + 1]
+    ],
+
+    beehive: [
+      [x + 1, y],
+      [x + 2, y],
+      [x, y + 1],
+      [x + 3, y + 1],
+      [x + 1, y + 2],
+      [x + 2, y + 2]
+    ],
+
+    // Spaceships
+    glider: [
+      [x + 1, y],
+      [x + 2, y + 1],
+      [x, y + 2],
+      [x + 1, y + 2],
+      [x + 2, y + 2]
+    ],
+
+    lwss: [ // Lightweight spaceship
+      [x + 1, y],
+      [x + 2, y],
+      [x + 3, y],
+      [x + 4, y],
+      [x, y + 1],
+      [x + 4, y + 1],
+      [x + 4, y + 2],
+      [x, y + 3],
+      [x + 3, y + 3]
+    ]
+  };
+
+  // return patterns[style]
+  let p = patterns[style]
+  // console.log(p)
+  p.forEach(coord => {
+    // console.log(coord)
+    grid.data[coord[0]][coord[1]].alive = true
+  })
+}
+
+function getAlive() {
+  let cells = []
+  grid.data.forEach(row => {
+    row.forEach(col => {
+      if (col.alive) cells.push(col)
+    })
+  })
+  return cells
 }
