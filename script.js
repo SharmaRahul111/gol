@@ -54,10 +54,10 @@ function animate() {
   // requestAnimationFrame(animate)
 }
 
-addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+// addEventListener('resize', () => {
+//   canvas.width = window.innerWidth;
+//   canvas.height = window.innerHeight;
+// });
 
 // helper functions
 
