@@ -12,7 +12,7 @@ canvas.height = innerHeight;
 // Game control variables
 let ON = false
 let GRID = true
-let DEBUG = false
+let DEBUG = true
 
 let size = 30
 let cols = Math.floor(innerHeight / size)
@@ -147,3 +147,13 @@ function getAlive() {
   })
   return cells
 }
+
+
+canvas.addEventListener('click', e => {
+  // console.log(e)
+  let box = canvas.getBoundingClientRect()
+  let x = Math.floor((e.clientX - box.top) / size)
+  let y = Math.floor((e.clientY - box.left) / size)
+  grid.data[x][y].alive = !grid.data[x][y].alive
+  // console.log(x, y)
+})
