@@ -7,7 +7,7 @@
 let canvas = document.querySelector("canvas");
 let c = canvas.getContext("2d");
 canvas.width = innerWidth;
-canvas.height = innerHeight - 60;
+canvas.height = innerHeight - 120;
 
 // Game control variables
 let ON = false
