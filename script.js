@@ -3,6 +3,19 @@
 // Notes for the readers:
 // 1. I bellieve the x,y is actually y,x due to rows, cols order
 // 2. The neighbour count function is very bad, needs an update I know
+//
+//
+// TODO: Grid size control
+// TODO: Mousedown and tap and hold support
+// TODO: Add more controls and info panel (generation, population, etc)
+// TODO: Polish the UI a bit more
+// TODO: Add a way to add presets like oscillator, glider, etc
+// TODO: Modularize the code more
+// TODO: Refactor the code
+// TODO: Add code comments in places where needed
+//
+// FIXME: Canvas alignment
+// FIXME: Canvas resize
 
 let canvas = document.querySelector("canvas");
 let c = canvas.getContext("2d");
