@@ -1,7 +1,16 @@
+// Author: Pramendra Sharma
+//
+// Notes for the readers:
+// 1. I bellieve the x,y is actually y,x due to rows, cols order
+// 2. The neighbour count function is very bad, needs an update I know
+
 let canvas = document.querySelector("canvas");
 let c = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
+
+// Game control variables
+let ON = false
 
 class Cell {
   constructor(x, y, data) {
@@ -12,9 +21,28 @@ class Cell {
 
   }
   get count() {
-    let edgeCount = this.data[i][j - 1].alive + this.data[i][j + 1].alive + this.data[i - 1][j].alive + this.data[i + 1][j].alive
-    let cornerCount = this.data[i - 1][j - 1].alive + this.data[i - 1][j + 1].alive + this.data[i + 1][j - 1] + this.data[i + 1][j + 1].alive
-    return edgeCount + cornerCount
+    // let edgeCount = this.data[this.x][this.y - 1].alive + this.data[this.x][this.y + 1].alive +
+    //   this.data[this.x - 1][this.y].alive + this.data[this.x + 1][this.y].alive
+    // let cornerCount = this.data[this.x - 1][this.y - 1].alive + this.data[this.x - 1][this.y + 1].alive +
+    //   this.data[this.x + 1][this.y - 1] + this.data[this.x + 1][this.y + 1].alive
+    // return edgeCount + cornerCount
+
+    let x = this.x
+    let y = this.y
+
+    let h = this.data.length
+    let w = this.data[0].length
+    // console.log(x, y, h, w)
+    let count = 0
+    if (x > 0 && this.data[x - 1][y].alive) count++
+    if (y > 0 && this.data[x][y - 1].alive) count++
+    if (x < h - 1 && this.data[x + 1][y].alive) count++
+    if (y < w - 1 && this.data[x][y + 1].alive) count++
+    if (x > 0 && y > 0 && this.data[x - 1][y - 1].alive) count++
+    if (x < h - 1 && y < w - 1 && this.data[x + 1][y + 1].alive) count++
+    if (x > 0 && y < w - 1 && this.data[x - 1][y + 1].alive) count++
+    if (x < h - 1 && y > 0 && this.data[x + 1][y - 1].alive) count++
+    return count
   }
 
 }
@@ -26,6 +54,8 @@ class Grid {
     this.rows = rows
     this.cols = cols
     this.size = size
+    // updateList is needed because altering alive status mid loop, alters the game of life rules
+    this.updateList = []
 
     for (let i = 0; i < this.rows; i++) {
       this.data[i] = []
@@ -33,6 +63,26 @@ class Grid {
         this.data[i].push(new Cell(i, j, this.data))
       }
     }
+  }
+  updateCheck() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.cols; j++) {
+        // Rules for Conway's game of life
+        // Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+        // Any live cell with two or three live neighbours lives on to the next generation.
+        // Any live cell with more than three live neighbours dies, as if by overpopulation.
+        // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+        let cell = this.data[i][j]
+        if (cell.alive && (cell.count < 2 || cell.count > 3)) this.updateList.push(cell)
+        else if (cell.count == 3) this.updateList.push(cell)
+      }
+    }
+
+  }
+
+  update() {
+    this.updateList.forEach(cell => cell.alive = !cell.alive)
+    this.updateList = []
   }
 
   draw(c) {
@@ -58,16 +108,17 @@ let rows = Math.floor(innerWidth / size)
 let grid = new Grid(rows, cols, size)
 
 function animate() {
-  requestAnimationFrame(animate);
   c.fillStyle = "rgba(0,0,0,1)"
-  c.fillRect(0, 0, innerWidth, innerHeight);
-  // console.log(5)
-  randomAlive()
+  c.fillRect(0, 0, innerWidth, innerHeight)
+
   grid.draw(c)
+  grid.updateCheck()
+  grid.update()
 
 
+  if (ON) requestAnimationFrame(animate)
 }
-animate();
+animate()
 
 addEventListener('resize', () => {
   canvas.width = window.innerWidth;
@@ -75,6 +126,13 @@ addEventListener('resize', () => {
 });
 
 // helper functions
+function start() {
+  animate()
+  ON = true
+}
+function stop() {
+  ON = false
+}
 function alive(x, y) {
   grid.data[x][y].alive = true
 }
@@ -83,4 +141,8 @@ function randInt(x) {
 }
 function randomAlive() {
   alive(randInt(grid.rows), randInt(grid.cols))
+}
+function update() {
+  grid.updateCheck()
+  grid.update()
 }
